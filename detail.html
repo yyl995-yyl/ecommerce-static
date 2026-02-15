@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情 - 极简电商</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                ← 返回商品列表
+            </a>
+            <h1>🛍️ 极简电商</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="productDetail" class="product-detail">
+            <div style="text-align: center; padding: 3rem; font-size: 1.2rem; color: #666;">
+                正在加载商品详情...
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <a href="index.html" style="padding: 0.8rem 1.5rem; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: 500;">
+                ← 返回列表
+            </a>
+            <button onclick="shareProduct()" style="padding: 0.8rem 1.5rem; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 5px; cursor: pointer; font-weight: 500;">
+                📤 分享商品
+            </button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2026 极简电商 - 专属访问</p>
+        <button class="logout-btn" onclick="logout()">🚪 退出登录</button>
+    </footer>
+
+    <script>
+        // 🔐 认证检查
+        function checkAuthentication() {
+            const authenticated = localStorage.getItem('authenticated');
+            const authTimestamp = localStorage.getItem('authTimestamp');
+            
+            if (authenticated === 'true' && authTimestamp) {
+                const hoursSinceAuth = (Date.now() - parseInt(authTimestamp)) / (1000 * 60 * 60);
+                if (hoursSinceAuth < 24) {
+                    return true;
+                }
+            }
+            
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        // 商品数据（与首页相同）
+        const PRODUCTS_DATA = [
+            {
+                id: 1,
+                title: "iPhone 15 Pro",
+                price: 999.99,
+                description: "最新款iPhone，搭载A17 Pro芯片，性能强劲，拍照出色",
+                image_url: "https://via.placeholder.com/300x300/007bff/ffffff?text=iPhone+15+Pro",
+                category: "electronics"
+            },
+            {
+                id: 2,
+                title: "MacBook Pro",
+                price: 1999.99,
+                description: "专业级笔记本电脑，M3芯片，适合编程和设计工作",
+                image_url: "https://via.placeholder.com/300x300/28a745/ffffff?text=MacBook+Pro",
+                category: "electronics"
+            },
+            {
+                id: 3,
+                title: "Nike Air Max",
+                price: 129.99,
+                description: "舒适的运动鞋，气垫设计，适合日常穿着和运动",
+                image_url: "https://via.placeholder.com/300x300/dc3545/ffffff?text=Nike+Air+Max",
+                category: "clothing"
+            },
+            {
+                id: 4,
+                title: "咖啡杯套装",
+                price: 29.99,
+                description: "精美陶瓷咖啡杯，4件套，适合家庭和办公室使用",
+                image_url: "https://via.placeholder.com/300x300/ffc107/000000?text=Coffee+Cup+Set",
+                category: "home"
+            },
+            {
+                id: 5,
+                title: "Python编程书籍",
+                price: 49.99,
+                description: "Python编程从入门到精通，适合初学者和进阶开发者",
+                image_url: "https://via.placeholder.com/300x300/6f42c1/ffffff?text=Python+Book",
+                category: "books"
+            }
+        ];
+
+        // 获取URL参数
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                id: urlParams.get('id')
+            };
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categoryMap = {
+                'electronics': '电子产品',
+                'clothing': '服装',
+                'home': '家居',
+                'books': '图书'
+            };
+            return categoryMap[category] || category;
+        }
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 先检查认证
+            if (!checkAuthentication()) {
+                return;
+            }
+            
+            // 加载商品详情
+            const params = getUrlParams();
+            if (params.id) {
+                loadProductDetail(parseInt(params.id));
+            } else {
+                showError('商品ID参数缺失');
+            }
+        });
+
+        // 加载商品详情
+        function loadProductDetail(productId) {
+            const product = PRODUCTS_DATA.find(p => p.id === productId);
+            const container = document.getElementById('productDetail');
+            
+            if (product) {
+                container.innerHTML = `
+                    <div class="product-content">
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <img src="${product.image_url}" alt="${product.title}" class="product-image-large"
+                                 onerror="this.src='https://via.placeholder.com/400x400/cccccc/666666?text=图片加载失败'">
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; justify-content: center;">
+                            <h1 class="product-title-large">${product.title}</h1>
+                            <div class="product-price-large">¥${product.price}</div>
+                            <span class="product-category" style="font-size: 1rem; padding: 0.8rem 1.5rem;">${getCategoryName(product.category)}</span>
+                            
+                            <div class="product-description-large">
+                                ${product.description}
+                            </div>
+                            
+                            <div style="display: flex; gap: 2rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 0.9rem; color: #999; margin-bottom: 0.5rem;">商品ID</span>
+                                    <span style="font-size: 1.1rem; font-weight: 600; color: #333;">#${product.id}</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 0.9rem; color: #999; margin-bottom: 0.5rem;">分类</span>
+                                    <span style="font-size: 1.1rem; font-weight: 600; color: #333;">${getCategoryName(product.category)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 更新页面标题
+                document.title = `${product.title} - 极简电商`;
+            } else {
+                showError('商品不存在');
+            }
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const container = document.getElementById('productDetail');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #e74c3c; background: #ffeaea; border-radius: 10px;">
+                    <h3>加载失败</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // 分享商品
+        function shareProduct() {
+            const params = getUrlParams();
+            if (params.id) {
+                const shareUrl = window.location.href;
+                if (navigator.share) {
+                    navigator.share({
+                        title: document.title,
+                        url: shareUrl
+                    });
+                } else {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        alert('商品链接已复制到剪贴板！');
+                    });
+                }
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('authenticated');
+            localStorage.removeItem('authTimestamp');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

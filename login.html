@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问认证 - 极简电商</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            margin: 0; padding: 1rem;
+        }
+        .login-container {
+            background: white; padding: 3rem; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px;
+        }
+        .logo { text-align: center; margin-bottom: 2rem; }
+        .logo h1 { color: #333; font-size: 2rem; margin-bottom: 0.5rem; }
+        .logo p { color: #666; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+        .form-group input {
+            width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0;
+            border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .login-btn {
+            width: 100%; background: #667eea; color: white; border: none;
+            padding: 1rem; border-radius: 5px; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .login-btn:hover { background: #5a6fd8; }
+        .error { color: #e74c3c; text-align: center; margin-top: 1rem; display: none; }
+        .hint { text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🔐 专属访问</h1>
+            <p>请输入访问密码</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">访问密码</label>
+                <input type="password" id="password" placeholder="请输入密码" required autofocus>
+            </div>
+            
+            <button type="submit" class="login-btn">进入网站</button>
+            
+            <div id="errorMessage" class="error">密码错误，请重试</div>
+            
+            <div class="hint">
+                <p>提示：联系网站管理员获取访问权限</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 🔑 专属密码（修改这里！）
+        const CORRECT_PASSWORD = "yyl2026";
+        
+        // 检查是否已认证
+        function checkAlreadyAuthenticated() {
+            const authenticated = localStorage.getItem('authenticated');
+            const authTimestamp = localStorage.getItem('authTimestamp');
+            
+            if (authenticated === 'true' && authTimestamp) {
+                const hoursSinceAuth = (Date.now() - parseInt(authTimestamp)) / (1000 * 60 * 60);
+                if (hoursSinceAuth < 24) {
+                    window.location.href = 'index.html';
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // 页面加载时检查
+        if (!checkAlreadyAuthenticated()) {
+            document.getElementById('password').focus();
+        }
+        
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (password === CORRECT_PASSWORD) {
+                // 密码正确，保存认证状态
+                localStorage.setItem('authenticated', 'true');
+                localStorage.setItem('authTimestamp', Date.now().toString());
+                window.location.href = 'index.html';
+            } else {
+                // 密码错误
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        });
+    </script>
+</body>
+</html>
