@@ -16,13 +16,13 @@
 1. 创建GitHub仓库
 2. 上传所有文件到仓库
 3. 开启GitHub Pages功能
-4. 访问你的网站
+4. 访问我的网站
 
 ## 访问方式
 
-网站地址：`https://你的用户名.github.io/仓库名`
+网站地址：`https://yyl995-yyl.github.io/ecommerce-static/index.html`
 
-首次访问需要输入密码：`yyl2026`
+首次访问需要输入密码
 
 ## 文件结构
 
@@ -43,5 +43,6 @@ const CORRECT_PASSWORD = "你的新密码";
 在 `index.html` 和 `detail.html` 的 `PRODUCTS_DATA` 数组中添加新商品。
 
 ## 技术支持
+
 
 如有问题，请联系网站管理员。
